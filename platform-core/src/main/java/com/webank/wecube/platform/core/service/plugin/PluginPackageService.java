@@ -660,7 +660,7 @@ public class PluginPackageService {
 
             // mkdir at remote host
             if (!remotePath.equals("/") && !remotePath.equals(".")) {
-                String mkdirCmd = String.format("rm -rf %s && mkdir -p %s", remotePath, remotePath);
+                String mkdirCmd = String.format("rm -rf %s && mkdir  -p %s", remotePath, remotePath);
 
                 try {
                     commandService.runAtRemote(remoteIp, pluginProperties.getStaticResourceServerUser(),
