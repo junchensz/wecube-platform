@@ -33,4 +33,9 @@ public interface PluginConfigInterfaceRepository extends CrudRepository<PluginCo
     default Optional<List<PluginConfigInterface>> findAllEnabledWithEntityNameNull() {
         return findAllByEntityNameEmptyAndStatus(Status.ENABLED);
     }
+
+    @Query("select configInterface from PluginConfigInterface configInterface where configInterface.pluginConfig.status = 'ENABLED' and ((configInterface.pluginConfig.targetEntity=:targetEntity and configInterface.pluginConfig.targetPackage=:targetPackage) or configInterface.pluginConfig.targetEntity is null or configInterface.pluginConfig.targetEntity='')")
+    Optional<List<PluginConfigInterface>> findAvailableByEntity(@Param("targetPackage") String targetPackage,
+            @Param("targetEntity") String targetEntity);
+   
 }

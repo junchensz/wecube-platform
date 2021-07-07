@@ -1,8 +1,11 @@
 package com.webank.wecube.platform.core.controller;
 
+import com.webank.wecube.platform.core.commons.WecubeCoreException;
 import com.webank.wecube.platform.core.domain.JsonResponse;
+import com.webank.wecube.platform.core.dto.CommonResponseDto;
 import com.webank.wecube.platform.core.dto.PluginConfigDto;
-import com.webank.wecube.platform.core.dto.TargetEntityFilterRuleDto;
+import com.webank.wecube.platform.core.dto.PluginInterfaceRoleRequestDto;
+import com.webank.wecube.platform.core.dto.queryAvailableInterfacesForProcessDefinitionDto;
 import com.webank.wecube.platform.core.service.plugin.PluginConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +49,7 @@ public class PluginConfigController {
     public JsonResponse queryAllEnabledPluginConfigInterfaceByEntityNameAndFilterRule(
             @PathVariable(value = "package-name") String packageName,
             @PathVariable(value = "entity-name") String entityName,
-            @RequestBody TargetEntityFilterRuleDto filterRule) {
+            @RequestBody queryAvailableInterfacesForProcessDefinitionDto filterRule) {
         return okayWithData(pluginConfigService.queryAllEnabledPluginConfigInterfaceForEntity(packageName, entityName,
                 filterRule));
     }
@@ -82,4 +85,32 @@ public class PluginConfigController {
         return okay();
     }
 
+    @GetMapping("/plugins/interfaces/{plugin-interface-id}/roles")
+    public CommonResponseDto getPluginInterfacePermission(
+            @PathVariable("plugin-interface-id") String pluginInterfaceId) {
+        return CommonResponseDto.okayWithData(pluginConfigService.getPluginInterfacePermissionById(pluginInterfaceId));
+    }
+
+    @PostMapping("/plugins/interfaces/{plugin-service-name}/roles")
+    public CommonResponseDto grantPluginInterfacePermissionToRoles(@PathVariable("plugin-service-name") String pluginServiceName,
+            @RequestBody PluginInterfaceRoleRequestDto pluginInterfaceRoleRequestDto) {
+        try {
+            pluginConfigService.grantPluginInterfacePermissionToRoles(pluginServiceName, pluginInterfaceRoleRequestDto);
+        } catch (WecubeCoreException ex) {
+            return CommonResponseDto.error(ex.getMessage());
+        }
+        return CommonResponseDto.okay();
+    }
+
+    @DeleteMapping("/plugins/interfaces/{plugin-service-name}/roles")
+    public CommonResponseDto removePluginInterfacePermissionToRoles(@PathVariable("plugin-service-name") String pluginServiceName,
+            @RequestBody PluginInterfaceRoleRequestDto pluginInterfaceRoleRequestDto) {
+        try {
+            pluginConfigService.removePluginInterfacePermissionToRoles(pluginServiceName,
+                    pluginInterfaceRoleRequestDto);
+        } catch (WecubeCoreException ex) {
+            return CommonResponseDto.error(ex.getMessage());
+        }
+        return CommonResponseDto.okay();
+    }
 }
